@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aruba 6300 Management Console</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <h1>Aruba 6300 Management Console</h1>
+      <p class="subtitle">GUI-first operational management with guided inputs, options, and tooltips.</p>
+    </div>
+    <div class="connection-panel card">
+      <h2>Switch Connection</h2>
+      <div class="grid two">
+        <label>Host/IP
+          <input id="host" placeholder="192.168.1.10" />
+        </label>
+        <label>Port
+          <input id="port" type="number" value="443" />
+        </label>
+        <label>Protocol
+          <select id="protocol">
+            <option value="https">HTTPS (REST)</option>
+            <option value="ssh">SSH (CLI)</option>
+          </select>
+        </label>
+        <label>Username
+          <input id="username" placeholder="admin" />
+        </label>
+        <label>Password
+          <input id="password" type="password" placeholder="••••••••" />
+        </label>
+        <label>VRF
+          <input id="vrf" placeholder="default" />
+        </label>
+      </div>
+      <button id="connectBtn" class="btn primary">Connect</button>
+      <p id="connectionStatus" class="status">Not connected.</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Function Library</h2>
+      <p>Select a function group to configure variables. Each tool includes explanatory tips and validation hints.</p>
+      <div id="functionContainer" class="function-grid"></div>
+    </section>
+
+    <section class="card">
+      <h2>Execution Console</h2>
+      <p>Generated action preview (REST payload + CLI equivalent) before execution.</p>
+      <textarea id="commandPreview" rows="12" readonly></textarea>
+      <div class="button-row">
+        <button id="generateBtn" class="btn">Generate Preview</button>
+        <button id="executeBtn" class="btn primary">Execute (Simulated)</button>
+        <button id="clearLogBtn" class="btn danger">Clear Log</button>
+      </div>
+      <h3>Activity Log</h3>
+      <ul id="activityLog" class="log"></ul>
+    </section>
+  </main>
+
+  <template id="toolTemplate">
+    <article class="tool card">
+      <div class="tool-header">
+        <h3 class="tool-title"></h3>
+        <span class="tooltip" tabindex="0">ⓘ<span class="tooltiptext"></span></span>
+      </div>
+      <div class="tool-fields"></div>
+    </article>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
