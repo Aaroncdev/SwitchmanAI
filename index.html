@@ -36,8 +36,17 @@
         <label>VRF
           <input id="vrf" placeholder="default" />
         </label>
+        <label>API Version
+          <input id="apiVersion" value="v10.13" />
+        </label>
+        <label class="check">
+          <input id="insecure" type="checkbox" checked /> Ignore TLS cert errors
+        </label>
       </div>
-      <button id="connectBtn" class="btn primary">Connect</button>
+      <div class="button-row">
+        <button id="connectBtn" class="btn primary">Connect</button>
+        <button id="pullBtn" class="btn">Pull Live Details</button>
+      </div>
       <p id="connectionStatus" class="status">Not connected.</p>
     </div>
   </header>
@@ -55,7 +64,7 @@
       <textarea id="commandPreview" rows="12" readonly></textarea>
       <div class="button-row">
         <button id="generateBtn" class="btn">Generate Preview</button>
-        <button id="executeBtn" class="btn primary">Execute (Simulated)</button>
+        <button id="executeBtn" class="btn primary">Execute (Live)</button>
         <button id="clearLogBtn" class="btn danger">Clear Log</button>
       </div>
       <h3>Activity Log</h3>

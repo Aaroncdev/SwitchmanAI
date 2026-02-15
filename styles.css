@@ -137,3 +137,12 @@ textarea { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
   border-radius: 7px;
   padding: 0.45rem 0.6rem;
 }
+
+.check {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.6rem;
+}
+
+.check input { width: auto; }

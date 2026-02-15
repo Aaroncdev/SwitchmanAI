@@ -8,10 +8,7 @@ const functionDefinitions = [
       { key: "location", label: "Location", type: "text", placeholder: "DataCenter-Rack12" },
       { key: "contact", label: "Contact", type: "text", placeholder: "netops@example.com" }
     ],
-    build: (v) => ({
-      cli: [`hostname ${v.hostname}`, `snmp-server location ${v.location}`, `snmp-server contact ${v.contact}`],
-      rest: { system: { hostname: v.hostname, location: v.location, contact: v.contact } }
-    })
+    build: (v) => ({ cli: [`hostname ${v.hostname}`, `snmp-server location ${v.location}`, `snmp-server contact ${v.contact}`] })
   },
   {
     key: "vlan",
@@ -22,10 +19,7 @@ const functionDefinitions = [
       { key: "name", label: "VLAN Name", type: "text", placeholder: "VOICE" },
       { key: "state", label: "Admin State", type: "select", options: ["up", "down"] }
     ],
-    build: (v) => ({
-      cli: [`vlan ${v.id}`, `name ${v.name}`, `${v.state === "up" ? "no shutdown" : "shutdown"}`],
-      rest: { vlan: { id: Number(v.id), name: v.name, admin_state: v.state } }
-    })
+    build: (v) => ({ cli: [`vlan ${v.id}`, `name ${v.name}`, `${v.state === "up" ? "no shutdown" : "shutdown"}`] })
   },
   {
     key: "interface",
@@ -37,10 +31,7 @@ const functionDefinitions = [
       { key: "mode", label: "Mode", type: "select", options: ["access", "trunk"] },
       { key: "vlan", label: "VLAN/Native VLAN", type: "number", placeholder: "10" }
     ],
-    build: (v) => ({
-      cli: [`interface ${v.port}`, `description ${v.description}`, `vlan ${v.mode} ${v.vlan}`],
-      rest: { interface: { id: v.port, description: v.description, mode: v.mode, vlan: Number(v.vlan) } }
-    })
+    build: (v) => ({ cli: [`interface ${v.port}`, `description ${v.description}`, `vlan ${v.mode} ${v.vlan}`] })
   },
   {
     key: "lag",
@@ -51,10 +42,7 @@ const functionDefinitions = [
       { key: "members", label: "Member Ports (comma-separated)", type: "text", placeholder: "1/1/49,1/1/50" },
       { key: "lacp", label: "LACP Mode", type: "select", options: ["active", "passive"] }
     ],
-    build: (v) => ({
-      cli: [`interface lag ${v.lagId}`, `lacp mode ${v.lacp}`, `members ${v.members}`],
-      rest: { lag: { id: Number(v.lagId), members: v.members.split(",").map((m) => m.trim()), lacp: v.lacp } }
-    })
+    build: (v) => ({ cli: [`interface lag ${v.lagId}`, `lacp mode ${v.lacp}`, `members ${v.members}`] })
   },
   {
     key: "stp",
@@ -65,10 +53,7 @@ const functionDefinitions = [
       { key: "priority", label: "Bridge Priority", type: "number", placeholder: "4096" },
       { key: "edgePort", label: "Edge Port Default", type: "select", options: ["enabled", "disabled"] }
     ],
-    build: (v) => ({
-      cli: [`spanning-tree mode ${v.mode}`, `spanning-tree priority ${v.priority}`, `spanning-tree port-type-admin-edge ${v.edgePort}`],
-      rest: { stp: { mode: v.mode, priority: Number(v.priority), edge_default: v.edgePort === "enabled" } }
-    })
+    build: (v) => ({ cli: [`spanning-tree mode ${v.mode}`, `spanning-tree priority ${v.priority}`, `spanning-tree port-type-admin-edge ${v.edgePort}`] })
   },
   {
     key: "acl",
@@ -80,10 +65,7 @@ const functionDefinitions = [
       { key: "dst", label: "Destination CIDR", type: "text", placeholder: "172.16.0.0/16" },
       { key: "action", label: "Action", type: "select", options: ["permit", "deny"] }
     ],
-    build: (v) => ({
-      cli: [`access-list ip ${v.name}`, `${v.action} ip ${v.src} ${v.dst}`],
-      rest: { acl: { name: v.name, rules: [{ action: v.action, src: v.src, dst: v.dst, protocol: "ip" }] } }
-    })
+    build: (v) => ({ cli: [`access-list ip ${v.name}`, `${v.action} ip ${v.src} ${v.dst}`] })
   },
   {
     key: "qos",
@@ -94,10 +76,7 @@ const functionDefinitions = [
       { key: "trust", label: "Trust DSCP", type: "select", options: ["enabled", "disabled"] },
       { key: "queue", label: "Queue Profile", type: "text", placeholder: "strict-priority" }
     ],
-    build: (v) => ({
-      cli: [`interface ${v.port}`, `qos trust dscp ${v.trust === "enabled" ? "" : "disable"}`.trim(), `qos queue-profile ${v.queue}`],
-      rest: { qos: { interface: v.port, trust_dscp: v.trust === "enabled", queue_profile: v.queue } }
-    })
+    build: (v) => ({ cli: [`interface ${v.port}`, `qos trust dscp ${v.trust === "enabled" ? "" : "disable"}`.trim(), `qos queue-profile ${v.queue}`] })
   },
   {
     key: "snmp",
@@ -108,10 +87,7 @@ const functionDefinitions = [
       { key: "community", label: "Community/User", type: "text", placeholder: "public" },
       { key: "trapHost", label: "Trap Host", type: "text", placeholder: "192.168.1.100" }
     ],
-    build: (v) => ({
-      cli: [`snmp-server ${v.version} ${v.community}`, `snmp-server host ${v.trapHost}`],
-      rest: { snmp: { version: v.version, credential: v.community, trap_host: v.trapHost } }
-    })
+    build: (v) => ({ cli: [`snmp-server ${v.version} ${v.community}`, `snmp-server host ${v.trapHost}`] })
   },
   {
     key: "services",
@@ -122,10 +98,7 @@ const functionDefinitions = [
       { key: "dns", label: "DNS Server", type: "text", placeholder: "1.1.1.1" },
       { key: "syslog", label: "Syslog Host", type: "text", placeholder: "192.168.1.200" }
     ],
-    build: (v) => ({
-      cli: [`ntp server ${v.ntp}`, `ip dns server-address ${v.dns}`, `logging ${v.syslog}`],
-      rest: { services: { ntp: v.ntp, dns: v.dns, syslog: v.syslog } }
-    })
+    build: (v) => ({ cli: [`ntp server ${v.ntp}`, `ip dns server-address ${v.dns}`, `logging ${v.syslog}`] })
   },
   {
     key: "routing",
@@ -136,10 +109,7 @@ const functionDefinitions = [
       { key: "nextHop", label: "Next Hop", type: "text", placeholder: "10.0.0.1" },
       { key: "ospfArea", label: "OSPF Area", type: "text", placeholder: "0.0.0.0" }
     ],
-    build: (v) => ({
-      cli: [`ip route ${v.route} ${v.nextHop}`, `router ospf 1`, `area ${v.ospfArea}`],
-      rest: { routing: { static_route: v.route, next_hop: v.nextHop, ospf_area: v.ospfArea } }
-    })
+    build: (v) => ({ cli: [`ip route ${v.route} ${v.nextHop}`, `router ospf 1`, `area ${v.ospfArea}`] })
   },
   {
     key: "security",
@@ -150,10 +120,7 @@ const functionDefinitions = [
       { key: "https", label: "HTTPS API", type: "select", options: ["enabled", "disabled"] },
       { key: "aaa", label: "AAA Method", type: "select", options: ["local", "radius", "tacacs+"] }
     ],
-    build: (v) => ({
-      cli: [`ssh server vrf default ${v.ssh === "enabled" ? "" : "disable"}`.trim(), `https-server ${v.https === "enabled" ? "" : "disable"}`.trim(), `aaa authentication login default ${v.aaa}`],
-      rest: { security: { ssh: v.ssh === "enabled", https_api: v.https === "enabled", aaa: v.aaa } }
-    })
+    build: (v) => ({ cli: [`ssh server vrf default ${v.ssh === "enabled" ? "" : "disable"}`.trim(), `https-server ${v.https === "enabled" ? "" : "disable"}`.trim(), `aaa authentication login default ${v.aaa}`] })
   }
 ];
 
@@ -162,6 +129,7 @@ const functionContainer = document.getElementById("functionContainer");
 const template = document.getElementById("toolTemplate");
 const commandPreview = document.getElementById("commandPreview");
 const activityLog = document.getElementById("activityLog");
+let sessionToken = "";
 
 functionDefinitions.forEach((def) => {
   values[def.key] = {};
@@ -183,6 +151,7 @@ functionDefinitions.forEach((def) => {
         op.textContent = option;
         input.appendChild(op);
       });
+      values[def.key][field.key] = field.options[0];
     } else {
       input = document.createElement("input");
       input.type = field.type;
@@ -192,10 +161,6 @@ functionDefinitions.forEach((def) => {
     input.addEventListener("input", () => {
       values[def.key][field.key] = input.value;
     });
-
-    if (field.type === "select") {
-      values[def.key][field.key] = field.options[0];
-    }
 
     label.appendChild(input);
     fieldWrapper.appendChild(label);
@@ -214,51 +179,80 @@ function addLog(msg) {
   activityLog.prepend(item);
 }
 
-document.getElementById("connectBtn").addEventListener("click", () => {
-  const host = document.getElementById("host").value.trim();
-  const user = document.getElementById("username").value.trim();
-  const status = document.getElementById("connectionStatus");
+function buildCliList() {
+  const cli = [];
+  functionDefinitions.forEach((def) => {
+    const built = def.build(values[def.key]);
+    cli.push(`# ${def.title}`, ...built.cli, "!");
+  });
+  return cli;
+}
 
-  if (!host || !user) {
-    status.textContent = "Connection failed: Host/IP and Username are required.";
-    status.classList.remove("connected");
-    addLog("Connection check failed. Missing host or username.");
-    return;
+async function api(path, method = "GET", body) {
+  const headers = { "Content-Type": "application/json" };
+  if (sessionToken) {
+    headers["X-Session-Token"] = sessionToken;
   }
+  const resp = await fetch(path, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined
+  });
+  const data = await resp.json();
+  if (!resp.ok) {
+    throw new Error(data.error || `Request failed (${resp.status})`);
+  }
+  return data;
+}
 
-  status.textContent = `Connected to ${host} as ${user} (simulated).`;
-  status.classList.add("connected");
-  addLog(`Connection established to ${host} via ${document.getElementById("protocol").value.toUpperCase()}.`);
+document.getElementById("connectBtn").addEventListener("click", async () => {
+  const status = document.getElementById("connectionStatus");
+  try {
+    const data = await api("/api/connect", "POST", {
+      host: document.getElementById("host").value.trim(),
+      username: document.getElementById("username").value.trim(),
+      password: document.getElementById("password").value,
+      apiVersion: document.getElementById("apiVersion").value.trim(),
+      insecure: document.getElementById("insecure").checked
+    });
+    sessionToken = data.token;
+    status.textContent = "Connected to Aruba switch API.";
+    status.classList.add("connected");
+    addLog("Connected to live switch API.");
+  } catch (err) {
+    status.textContent = `Connection failed: ${err.message}`;
+    status.classList.remove("connected");
+    addLog(`Connection failed: ${err.message}`);
+  }
+});
+
+document.getElementById("pullBtn").addEventListener("click", async () => {
+  try {
+    const data = await api("/api/discovery");
+    commandPreview.value = JSON.stringify(data.data, null, 2);
+    addLog("Pulled live inventory from switch (system/VLAN/interfaces/LAG). ");
+  } catch (err) {
+    addLog(`Pull failed: ${err.message}`);
+  }
 });
 
 document.getElementById("generateBtn").addEventListener("click", () => {
-  const payload = {};
-  const cli = [];
-
-  functionDefinitions.forEach((def) => {
-    const built = def.build(values[def.key]);
-    payload[def.key] = built.rest;
-    cli.push(`# ${def.title}`, ...built.cli, "!");
-  });
-
   commandPreview.value = [
-    "=== REST Payload Preview ===",
-    JSON.stringify(payload, null, 2),
-    "",
     "=== CLI Configuration Preview ===",
-    cli.join("\n")
+    buildCliList().join("\n")
   ].join("\n");
-
-  addLog("Generated configuration preview for all modules.");
+  addLog("Generated CLI configuration preview.");
 });
 
-document.getElementById("executeBtn").addEventListener("click", () => {
-  if (!commandPreview.value) {
-    addLog("Execution blocked: generate preview first.");
-    return;
+document.getElementById("executeBtn").addEventListener("click", async () => {
+  try {
+    const commands = buildCliList().filter((line) => line && !line.startsWith("#") && line !== "!");
+    const response = await api("/api/apply", "POST", { cli: commands, dryRun: false });
+    commandPreview.value = JSON.stringify(response, null, 2);
+    addLog("Executed commands against live switch API CLI endpoint.");
+  } catch (err) {
+    addLog(`Execution failed: ${err.message}`);
   }
-
-  addLog("Executed configuration transaction (simulated dry-run). No live switch changes sent.");
 });
 
 document.getElementById("clearLogBtn").addEventListener("click", () => {
