@@ -55,3 +55,17 @@ Click **Pull Live Details**. The execution console will display discovered JSON 
 - Use a **test switch** first.
 - Start with low-risk commands (description/VLAN naming) before access/security changes.
 - Some Aruba firmware versions differ in REST endpoint behavior; if your switch uses a different API version/path, change the **API Version** field.
+
+
+## Troubleshooting connection errors
+
+If log shows **Connection failed: Failed to fetch**:
+
+- Make sure you started this app with `python3 server.py` (not `python3 -m http.server` and not opening `index.html` directly).
+- Open exactly `http://localhost:8000`.
+- Verify Protocol is **HTTPS (REST)** for now. SSH mode is not implemented in this build yet.
+- Verify switch REST port (usually `443`) and API version path (example `v10.13`).
+- If your cert is self-signed in lab, keep **Ignore TLS cert errors** enabled.
+
+The backend now returns detailed errors for unreachable TCP port, unsupported protocol selection, and authentication failures.
+

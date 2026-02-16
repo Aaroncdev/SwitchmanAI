@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import json
+import socket
 import ssl
 import uuid
 from dataclasses import dataclass
@@ -14,13 +15,15 @@ ROOT = Path(__file__).resolve().parent
 @dataclass
 class ArubaSession:
     host: str
+    port: int
+    scheme: str
     api_version: str
     cookie: str
     insecure: bool
 
     @property
     def base(self) -> str:
-        return f"https://{self.host}/rest/{self.api_version}"
+        return f"{self.scheme}://{self.host}:{self.port}/rest/{self.api_version}"
 
 
 SESSIONS: dict[str, ArubaSession] = {}
@@ -81,18 +84,41 @@ class AppHandler(SimpleHTTPRequestHandler):
 
     def handle_connect(self):
         body = self._json_body()
-        host = body.get("host", "").strip()
+        host = body.get("host", "").strip().replace("https://", "").replace("http://", "")
+        host = host.split("/")[0].split(":")[0]
         username = body.get("username", "").strip()
         password = body.get("password", "")
         api_version = body.get("apiVersion", "v10.13")
         insecure = bool(body.get("insecure", True))
+        protocol = body.get("protocol", "https").lower()
+        port = int(body.get("port", 443) or 443)
 
         if not host or not username or not password:
             return self._send_json({"error": "host, username, and password are required."}, status=400)
 
+        if protocol != "https":
+            return self._send_json(
+                {
+                    "error": "SSH connectivity is not implemented in this build. Use HTTPS (REST API) for connect/pull/push.",
+                    "detail": "Set Protocol to HTTPS (REST) and use switch REST credentials.",
+                },
+                status=400,
+            )
+
+        try:
+            socket.create_connection((host, port), timeout=5).close()
+        except OSError as exc:
+            return self._send_json(
+                {
+                    "error": f"Cannot reach switch TCP endpoint {host}:{port}.",
+                    "detail": str(exc),
+                },
+                status=502,
+            )
+
         payload = {"userName": username, "password": password}
         req = request.Request(
-            f"https://{host}/rest/{api_version}/login-sessions",
+            f"https://{host}:{port}/rest/{api_version}/login-sessions",
             data=json.dumps(payload).encode("utf-8"),
             method="POST",
             headers={"Content-Type": "application/json"},
@@ -115,7 +141,14 @@ class AppHandler(SimpleHTTPRequestHandler):
 
         cookie_header = f"sessionId={parsed_cookie['sessionId'].value}"
         token = uuid.uuid4().hex
-        SESSIONS[token] = ArubaSession(host=host, api_version=api_version, cookie=cookie_header, insecure=insecure)
+        SESSIONS[token] = ArubaSession(
+            host=host,
+            port=port,
+            scheme="https",
+            api_version=api_version,
+            cookie=cookie_header,
+            insecure=insecure,
+        )
         return self._send_json({"ok": True, "token": token})
 
     def handle_discovery(self):

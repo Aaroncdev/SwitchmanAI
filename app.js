@@ -193,32 +193,55 @@ async function api(path, method = "GET", body) {
   if (sessionToken) {
     headers["X-Session-Token"] = sessionToken;
   }
-  const resp = await fetch(path, {
-    method,
-    headers,
-    body: body ? JSON.stringify(body) : undefined
-  });
-  const data = await resp.json();
+
+  let resp;
+  try {
+    resp = await fetch(path, {
+      method,
+      headers,
+      body: body ? JSON.stringify(body) : undefined
+    });
+  } catch (err) {
+    if (location.protocol === "file:") {
+      throw new Error("Cannot call backend from file://. Start with `python3 server.py` and open http://localhost:8000.");
+    }
+    throw new Error(`Network error reaching local API bridge (${path}): ${err.message}`);
+  }
+
+  let data = {};
+  const text = await resp.text();
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    data = { error: text || `Request failed (${resp.status})` };
+  }
+
   if (!resp.ok) {
-    throw new Error(data.error || `Request failed (${resp.status})`);
+    const detail = data.detail ? ` Detail: ${data.detail}` : "";
+    throw new Error(`${data.error || `Request failed (${resp.status})`}${detail}`);
   }
   return data;
 }
 
 document.getElementById("connectBtn").addEventListener("click", async () => {
   const status = document.getElementById("connectionStatus");
+  const protocol = document.getElementById("protocol").value;
+  const port = Number(document.getElementById("port").value || "443");
+
   try {
     const data = await api("/api/connect", "POST", {
       host: document.getElementById("host").value.trim(),
+      port,
+      protocol,
       username: document.getElementById("username").value.trim(),
       password: document.getElementById("password").value,
       apiVersion: document.getElementById("apiVersion").value.trim(),
       insecure: document.getElementById("insecure").checked
     });
     sessionToken = data.token;
-    status.textContent = "Connected to Aruba switch API.";
+    status.textContent = `Connected to Aruba switch API (${protocol.toUpperCase()} ${port}).`;
     status.classList.add("connected");
-    addLog("Connected to live switch API.");
+    addLog(`Connected to live switch API at ${document.getElementById("host").value.trim()}:${port}.`);
   } catch (err) {
     status.textContent = `Connection failed: ${err.message}`;
     status.classList.remove("connected");
@@ -258,3 +281,8 @@ document.getElementById("executeBtn").addEventListener("click", async () => {
 document.getElementById("clearLogBtn").addEventListener("click", () => {
   activityLog.innerHTML = "";
 });
+
+
+if (location.protocol === "file:") {
+  addLog("You opened index.html directly. Start with `python3 server.py` and use http://localhost:8000 so API calls work.");
+}
